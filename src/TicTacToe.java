@@ -39,10 +39,11 @@ public class TicTacToe {
     }
 
     static boolean checkWin(char[][] field, char currentPlayerSign) {
-        for (int column = 0; column <offset ; column++) {
+        for (int column = 0; column < offset; column++) {
             for (int row = 0; row < offset; row++) {
-                if (checkDiagonalWIn(field, currentPlayerSign, column, row) || checkLanesWin(field, currentPlayerSign, column, row)) return true;
-                else if(isFieldFull(field)) System.out.println("It\'s Draw");
+                if (checkDiagonalWIn(field, currentPlayerSign, column, row) || checkLanesWin(field, currentPlayerSign, column, row))
+                    return true;
+                else if (isFieldFull(field)) System.out.println("It\'s Draw");
             }
         }
         return false;
@@ -69,14 +70,15 @@ public class TicTacToe {
         fromLeftUpToRightDown = true;
         fromLeftDownToRightUp = true;
         for (int i = 0; i < winSize; i++) {
-            fromLeftUpToRightDown &= (field[i+offsetX][i+offsetY] == currentPlayerSing);
-            fromLeftDownToRightUp &= (field[winSize - i - 1+offsetX][i+offsetY] == currentPlayerSing);
+            fromLeftUpToRightDown &= (field[i + offsetX][i + offsetY] == currentPlayerSing);
+            fromLeftDownToRightUp &= (field[winSize - i - 1 + offsetX][i + offsetY] == currentPlayerSing);
         }
 
         if (fromLeftUpToRightDown || fromLeftDownToRightUp) return true;
 
         return false;
     }
+
     static boolean isFieldFull(char[][] field) {
         for (int i = 0; i < field.length; i++) {
             for (int j = 0; j < field.length; j++) {
@@ -89,43 +91,71 @@ public class TicTacToe {
 
     static void move(char[][] field, char currentPlayerSign) {
         if (currentPlayerSign == 'X') {
-            movePlayer(field, currentPlayerSign);
+            movePlayer(field);
         } else {
-            moveComputer(field, currentPlayerSign);
+            moveComputer(field);
         }
     }
 
-    static void moveComputer(char[][] field, char computerSign) {
-        int y;
-        int x;
-        Random random = new Random();
-
-        do {
-            y = random.nextInt(fieldSize);
-            x = random.nextInt(fieldSize);
-        } while (!isCellEmpty(field, x, y));
-
+    static void moveComputer(char[][] field) {
+        int x = 0, y = 0;
+        boolean computer_win = false;
+        boolean player_win = false;
+        for (int i = 0; i < fieldSize; i++) {
+            for (int j = 0; j < fieldSize; j++) {
+                if (isCellEmpty(field, i, j)) {
+                    field[i][j] = playerSign;
+                    if (checkWin(field, playerSign)) {
+                        x = i;
+                        y = j;
+                        player_win = true;
+                    }
+                    field[i][j] = '-';
+                }
+            }
+        }
+        for (int i = 0; i < fieldSize; i++) {
+            for (int j = 0; j < fieldSize; j++) {
+                if (isCellEmpty(field, i, j)) {
+                    field[i][j] = computerSign;
+                    if (checkWin(field, computerSign)) {
+                        x = i;
+                        y = j;
+                        computer_win = true;
+                    }
+                    field[i][j] = '-';
+                }
+            }
+        }
+        if (!computer_win && !player_win) {
+            do {
+                Random random = new Random();
+                x = random.nextInt(fieldSize);
+                y = random.nextInt(fieldSize);
+            }
+            while (!isCellEmpty(field, x, y));
+        }
         System.out.println("Computer's move ...");
         System.out.println(String.format("Computer decided choose coordinates [%s, %s]", y + 1, x + 1));
         field[x][y] = computerSign;
     }
 
-    static void movePlayer(char[][] field, char playerSign) {
+    static void movePlayer(char[][] field) {
         int x;
         int y;
         boolean isEmptyCell;
-
+        Scanner scanner = new Scanner(System.in);
         do {
             boolean isCorrectCoordinates;
             do {
-                Scanner scanner = new Scanner(System.in);
-                System.out.println("Input X-coordinates [1, 2, 3, 4, 5]");
+                System.out.println(String.format("Input Y-coordinates in range [1 ; %s]", fieldSize));
                 y = scanner.nextInt() - 1;
-                System.out.println("Input Y-coordinates [1, 2, 3, 4, 5]");
+                System.out.println(String.format("Input X-coordinates in range [1 ; %s]", fieldSize));
                 x = scanner.nextInt() - 1;
 
-                isCorrectCoordinates = checkCoordinates(x, y);
+                isCorrectCoordinates = checkCoordinates(y, x);
                 notifyIncorrectCoordinates(isCorrectCoordinates);
+
             } while (!isCorrectCoordinates);
 
             isEmptyCell = isCellEmpty(field, x, y);
@@ -133,6 +163,7 @@ public class TicTacToe {
         } while (!isCellEmpty(field, x, y));
 
         field[x][y] = playerSign;
+
     }
 
     static boolean isCellEmpty(char[][] field, int x, int y) {
@@ -146,12 +177,12 @@ public class TicTacToe {
     }
 
     static boolean checkCoordinates(int x, int y) {
-        return (x >= 0 && x <= fieldSize) && (y >= 0 && y <= fieldSize);
+        return (x >= 0 && x <= fieldSize - 1) && (y >= 0 && y <= fieldSize - 1);
     }
 
     static void notifyIncorrectCoordinates(boolean isCorrect) {
         if (!isCorrect) {
-            System.out.println("Input coordinates are incorrect. Available coordinates in range [1, 2, 3, 4, 5]");
+            System.out.println(String.format("Input coordinates are incorrect. Available coordinates in range [1 ; %s]", fieldSize));
         }
     }
 
@@ -159,7 +190,6 @@ public class TicTacToe {
         for (int i = 0; i < field.length; i++) {
             for (int j = 0; j < field.length; j++) {
                 System.out.print(field[i][j] + "\t");
-
             }
             System.out.println();
         }
@@ -170,7 +200,6 @@ public class TicTacToe {
         for (int i = 0; i < fieldSize; i++) {
             for (int j = 0; j < fieldSize; j++) {
                 field[i][j] = '-';
-
             }
         }
         return field;
