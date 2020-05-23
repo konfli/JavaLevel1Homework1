@@ -3,10 +3,9 @@ import java.util.Scanner;
 
 public class TicTacToe {
 
-    public static int fieldSize = 3;
-    public static int winSize = 3;
-    public static int offsetX = fieldSize - winSize + 1;
-    public static int offsetY = fieldSize - winSize + 1;
+    public static int fieldSize = 5;
+    public static int winSize = 4;
+    public static int offset = fieldSize - winSize + 1;
     public static char playerSign = 'X';
     public static char computerSign = 'O';
 
@@ -40,8 +39,8 @@ public class TicTacToe {
     }
 
     static boolean checkWin(char[][] field, char currentPlayerSign) {
-        for (int column = 0; column < 1; column++) {
-            for (int row = 0; row < 1; row++) {
+        for (int column = 0; column <offset ; column++) {
+            for (int row = 0; row < offset; row++) {
                 if (checkDiagonalWIn(field, currentPlayerSign, column, row) || checkLanesWin(field, currentPlayerSign, column, row)) return true;
                 else if(isFieldFull(field)) System.out.println("It\'s Draw");
             }
